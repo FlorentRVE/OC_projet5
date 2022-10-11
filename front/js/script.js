@@ -2,7 +2,7 @@
 function getItems() {
     return fetch("http://localhost:3000/api/products") // Récupération des données de l'API
         .then(reponse => reponse.json()) // Permet de lire les données au format JSON
-        .catch(err => alert(err))// On attribue le nom Data à la réponse
+        .catch(err => alert(err))
 }
 
 async function displayItems() {
@@ -23,14 +23,19 @@ async function displayItems() {
         let description = document.createElement("p");
         description.innerText = element.description
         
-        // Création des différents contenant
+        // Création de la balise <article>
         let article = document.createElement("article");
+
+        // Création de la balise <a>
         let ancre = document.createElement("a");
+        ancre.href = "./product.html?id=" + element._id
+
+        // Sélection de la <section> ou l'on va afficher
         let section = document.getElementById("items");
 
         // On attache nos balise dans le contenant <article>
-        article.appendChild(title);
         article.appendChild(image);
+        article.appendChild(title);
         article.appendChild(description);
 
         // Qui lui-même sera rattaché au contenant <a>
