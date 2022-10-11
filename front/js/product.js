@@ -32,17 +32,27 @@ async function displayProduct() {
         let price = document.getElementById("price");
         price.innerHTML = element.price;
         
-        // Création de la balise <p>
+        // Remplissage de la balise <p>
         let description = document.getElementById("description")
         description.innerHTML = element.description
-
 
         // Rattache de l'img au contenant
         let img_container = document.querySelector(".item__img");
         img_container.appendChild(image);
+     
+        for(let i = 0; i< element.colors.length; i++) {  //Boucle permettant d'afficher les choix de couleurs
+
+        // Création de balise <option>
+        let option = document.createElement("option");
+        option.value = element.colors[i];
+        option.innerHTML = element.colors[i];
+
+        // Rattache des <option> à la balise <select> avec l'id "colors"
+        let colors = document.getElementById("colors")
+        colors.appendChild(option)
         }
 
-
+        }
     });
 }
 
