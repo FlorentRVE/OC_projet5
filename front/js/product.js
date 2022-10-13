@@ -57,3 +57,46 @@ async function displayProduct() {
 }
 
 displayProduct();
+
+// =========================== Ajout panier =======================
+
+let product = {  // Création d'un objet produit
+    id: "",
+    qte: "",
+    color: ""
+}
+
+function addToCart() {
+    let button = document.getElementById("addToCart");
+
+    button.addEventListener("click", function() {
+
+        // Récupération ID produit 
+        product.id = getID();
+
+        // Récupération quantité produit
+        let quantity = document.getElementById("quantity");
+        product.qte = quantity.value;
+
+        // Récupération couleur produit
+        let color = document.getElementById("colors");
+        product.color = color.value;
+
+        //////////////// A ce stade objet produit crée
+
+        // Récupération du panier de LocalStorage
+        let localCart = localStorage.getItem("cart");
+        // Création d'un panier Page à partir du panier LocaleStorage
+        let CurrentCart = localCart ? JSON.parse(localCart) : []
+
+        // Ajout produit dans le panier Page
+        CurrentCart.push(product);
+        console.log(CurrentCart);
+        
+        // Réassignation du panier actuelle au LocalStorage
+        localStorage.setItem('cart', JSON.stringify(CurrentCart));
+
+    })
+}
+
+addToCart();
