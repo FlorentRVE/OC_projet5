@@ -90,7 +90,28 @@ function addToCart() {
         let CurrentCart = localCart ? JSON.parse(localCart) : []
 
         // Ajout produit dans le panier Page
-        CurrentCart.push(product);
+        
+        let newArticle = true;
+
+        for(var i=0; i<CurrentCart.length; i++) {
+            if(product.id === CurrentCart[i].id && product.color === CurrentCart[i].color) {
+                
+                newArticle = false;
+                CurrentCart[i].qte = parseInt(product.qte) + parseInt(CurrentCart[i].qte)
+                console.log("Quantité +")
+
+            }
+        }
+               
+        if(newArticle){
+            
+            CurrentCart.push(product);
+            console.log("Product ajouté au panier")
+            
+        } 
+     
+        
+        console.log(product);
         console.log(CurrentCart);
         
         // Réassignation du panier actuelle au LocalStorage
@@ -100,3 +121,4 @@ function addToCart() {
 }
 
 addToCart();
+// localStorage.clear()
