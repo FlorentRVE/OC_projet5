@@ -94,8 +94,8 @@ function addToCart() {
         let newArticle = true;
 
         for(var i=0; i<CurrentCart.length; i++) {
-            if(product.id === CurrentCart[i].id && product.color === CurrentCart[i].color) {
-                
+            if(product.id === CurrentCart[i].id && product.color === CurrentCart[i].color) { //On parcourt l'array panier et si l'id et la couleur correspondent à ceux du produit de la page actuelle
+                                                                                             // On incrémente la quantité
                 newArticle = false;
                 CurrentCart[i].qte = parseInt(product.qte) + parseInt(CurrentCart[i].qte)
                 console.log("Quantité +")
@@ -103,13 +103,12 @@ function addToCart() {
             }
         }
                
-        if(newArticle){
+        if(newArticle && product.color != ""){ // Sinon si c'est un nouveau produit on l'ajoute au panier, sauf si la valeur de la couleur est vide
             
             CurrentCart.push(product);
             console.log("Product ajouté au panier")
             
         } 
-     
         
         console.log(product);
         console.log(CurrentCart);

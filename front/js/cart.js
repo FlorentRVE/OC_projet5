@@ -4,95 +4,144 @@ function getItems() {
         .catch(err => alert(err))
 }
 
-function getID() {
-    let url = window.location.search; // Récupération de la partie search de l'URL
-    let params = new URLSearchParams(url);
-    let id = params.get('id') 
-    return id // On isole et retourne l'id de la page actuelle
-}
+// Récupération du panier de LocalStorage
+let localCart = localStorage.getItem("cart");
+// Création d'un panier Page à partir du panier LocaleStorage
+let CurrentCart = localCart ? JSON.parse(localCart) : []
 
 async function displayProduct() {
     let data = await getItems();
-    let id = getID(); // Récupération de l'id de la page actuelle
 
+    CurrentCart.forEach(element => {           // Pour chaque élément du panier ...
 
-    data.forEach(element => {                   // Pour chaque élément de l'array data ...
-        if(element._id == id) {                 // Si l'id de l'URL == l'id produit dans la boucle alors on affiche
+        let id = element.id;
+
+        // Création du contenant <article>
+        let article = document.createElement("article");
+        article.className = "cart__item";
+        article.dataset.id = element.id;
+        article.dataset.color = element.color;
+
+        // Création <div> class="cart__item__img"
+        let CartItemImg = document.createElement("div");
+        CartItemImg.className = "cart__item__img";
+
+        // Création <div> class="cart__item__content"
+        let CartItemContent = document.createElement("div");
+        CartItemContent.className = "cart__item__content";
+
+        // Création <div> class="cart__item__content__description"
+        let CartItemContentDescription = document.createElement("div");
+        CartItemContentDescription.className = "cart__item__content__description";
+
+        // Création <div> class="cart__item__content__settings"
+        let CartItemContentSettings = document.createElement("div");
+        CartItemContentSettings.className = "cart__item__content__settings";
+
+        // Création <div> class="cart__item__content__settings__quantity"
+        let CartItemContentSettingsQuantity = document.createElement("div");
+        CartItemContentSettingsQuantity.className = "cart__item__content__settings__quantity";
+
+        // Création <div> class="cart__item__content__settings__delete"
+        let CartItemContentSettingsDelete = document.createElement("div");
+        CartItemContentSettingsDelete.className = "cart__item__content__settings__delete";
 
         // Création de la balise <img>
         let image = document.createElement("img");
-        image.src = element.imageUrl;
-        image.alt = element.altTxt
-        
-        // Remplissage de la balise <h1>
-        let title = document.getElementById("title");
-        title.innerHTML = element.name;
+        data.forEach( item => {
 
-        // Remplissage du prix
-        let price = document.getElementById("price");
-        price.innerHTML = element.price;
-        
-        // Remplissage de la balise <p>
-        let description = document.getElementById("description")
-        description.innerHTML = element.description
+                if(id === item._id) {
+                image.src = item.imageUrl;
+                }
+            }
+        )
 
-        // Rattache de l'img au contenant
-        let img_container = document.querySelector(".item__img");
-        img_container.appendChild(image);
-     
-        for(let i = 0; i< element.colors.length; i++) {  //Boucle permettant d'afficher les choix de couleurs
-
-        // Création de balise <option>
-        let option = document.createElement("option");
-        option.value = element.colors[i];
-        option.innerHTML = element.colors[i];
-
-        // Rattache des <option> à la balise <select> avec l'id "colors"
-        let colors = document.getElementById("colors")
-        colors.appendChild(option)
+        // Création de la balise <h2>
+        let h2 = document.createElement("h2");
+        data.forEach( item => {
+            
+            if(id === item._id) {
+                h2.innerHTML = item.name;
+            }
         }
+    )
+        
+        // Création de la balise <input>
+        let input = document.createElement("input");
+        input.type = "number";
+        input.className = "itemQuantity";
+        input.name = "itemQuantity";
+        input.value = element.qte;
+        input.min = "1";
+        input.max = "100";
+
+        // Création de la balise <p> pour la couleur
+        let color = document.createElement("p");
+        color.innerHTML = element.color;
+
+        // Création de la balise <p> pour le prix
+        let price = document.createElement("p");
+        data.forEach( item => {
+
+            if(id === item._id) {
+            price.innerHTML = item.price;
+            }
+        }
+    )
+
+        // Création de la balise <p> pour la quantité
+        let qte = document.createElement("p");
+        qte.innerHTML = element.qte;
+
+        // Création de la balise <p> delete item
+        let deleteP = document.createElement("p");
+        deleteP.innerHTML = "Supprimer";
+        deleteP.className = "deleteItem";
+
+        ///////////// Intégration des différents éléments
+
+        // <div> cart item img
+        CartItemImg.appendChild(image);
+
+        // <div> cart item content description
+        CartItemContentDescription.appendChild(h2);
+        CartItemContentDescription.appendChild(color);
+        CartItemContentDescription.appendChild(price);
+
+        // <div> cart item setting quantity
+        CartItemContentSettingsQuantity.appendChild(qte);
+        CartItemContentSettingsQuantity.appendChild(input);
+
+        // <div> cart item setting delete
+        CartItemContentSettingsDelete.appendChild(deleteP);
+
+        // <div> cart item setting 
+        CartItemContentSettings.appendChild(CartItemContentSettingsQuantity);
+        CartItemContentSettings.appendChild(CartItemContentSettingsDelete);
+
+        // <div> cart item content
+        CartItemContent.appendChild(CartItemContentDescription);
+        CartItemContent.appendChild(CartItemContentSettings);
+
+        // <article>
+        article.appendChild(CartItemContent);
+        article.appendChild(CartItemImg);
+        
+        // Intégration à la balise <section>
+
+        let section = document.getElementById("cart__items");
+        section.appendChild(article);
+
+        // Affichage du total
+
+        let totalqte = document.getElementById("totalQuantity");
+        let totalprice = document.getElementById("totalPrice");
+
+        totalqte.innerHTML = "50";
+        totalprice.innerHTML = "80";
 
         }
-    });
+    );
 }
 
 displayProduct();
-
-let product = {  // Création d'un objet produit
-    id: "",
-    qte: "",
-    color: ""
-}
-
-function addToCart() {
-    let button = document.getElementById("addToCart");
-
-    button.addEventListener("click", function() {
-
-        // Récupération ID produit 
-        product.id = getID();
-
-        // Récupération quantité produit
-        let quantity = document.getElementById("quantity");
-        product.qte = quantity.value;
-
-        // Récupération couleur produit
-        let color = document.getElementById("colors");
-        product.color = color.value;
-
-        //////////////// A ce stade objet produit crée
-
-        // Récupération du panier de LocalStorage
-        let localCart = localStorage.getItem("cart");
-        // Création d'un panier Page à partir du panier LocaleStorage
-        let CurrentCart = localCart ? JSON.parse(localCart) : []
-
-        // Ajout produit dans le panier Page
-        CurrentCart.push(product);
-        console.log(CurrentCart);
-        
-        // Réassignation du panier actuelle au LocalStorage
-        localStorage.setItem('cart', JSON.stringify(CurrentCart));
-
-    })
-}
