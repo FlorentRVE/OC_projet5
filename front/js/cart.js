@@ -137,8 +137,25 @@ async function displayProduct() {
         let totalqte = document.getElementById("totalQuantity");
         let totalprice = document.getElementById("totalPrice");
 
-        totalqte.innerHTML = "50";
-        totalprice.innerHTML = "80";
+        let sumQte = 0;
+        let sumPrice = 0;
+
+        for (let i = 0; i < CurrentCart.length; i++) {
+            sumQte += parseInt(CurrentCart[i].qte);
+        }
+
+        for (let i = 0; i < CurrentCart.length; i++) {
+
+            data.forEach( item => {
+
+                if(CurrentCart[i].id === item._id) {
+                sumPrice += parseInt(item.price * CurrentCart[i].qte);
+                }
+            })
+        }
+
+        totalqte.innerHTML = sumQte;
+        totalprice.innerHTML = sumPrice;
 
         }
     );
