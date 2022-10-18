@@ -9,7 +9,7 @@ let localCart = localStorage.getItem("cart");
 // Création d'un panier Page à partir du panier LocaleStorage
 let CurrentCart = localCart ? JSON.parse(localCart) : []
 
-async function displayProduct() {
+async function renderCart() {
     let data = await getItems();
 
     CurrentCart.forEach(element => {           // Pour chaque élément du panier ...
@@ -71,7 +71,7 @@ async function displayProduct() {
         input.type = "number";
         input.className = "itemQuantity";
         input.name = "itemQuantity";
-        input.value = element.qte;
+        input.value = element.qte;  // La valeur de base correspond à la quantité du produit actuel
         input.min = "1";
         input.max = "100";
 
@@ -132,33 +132,76 @@ async function displayProduct() {
         let section = document.getElementById("cart__items");
         section.appendChild(article);
 
-        // Affichage du total
 
-        let totalqte = document.getElementById("totalQuantity");
-        let totalprice = document.getElementById("totalPrice");
+        // Fonctionnalité modification
 
-        let sumQte = 0;
-        let sumPrice = 0;
+        input.addEventListener("change", (event) => {
+            qte.innerHTML = event.target.value;
+            element.qte = event.target.value;
 
-        for (let i = 0; i < CurrentCart.length; i++) {
-            sumQte += parseInt(CurrentCart[i].qte);
-        }
+            console.log(element.qte)
+            console.log(CurrentCart)
 
-        for (let i = 0; i < CurrentCart.length; i++) {
+            localStorage.setItem('cart', JSON.stringify(CurrentCart));
+            total();
+        })
 
-            data.forEach( item => {
+        // Fonctionnalité suppression
 
-                if(CurrentCart[i].id === item._id) {
-                sumPrice += parseInt(item.price * CurrentCart[i].qte);
-                }
-            })
-        }
+        deleteP.addEventListener("click", () => {
+            
+            let del = deleteP.closest("article");
+            
+            if(del.dataset.id === element.id && del.dataset.color === element.color) {
+                
+                
+                let index = CurrentCart.indexOf(element)
+                
+                CurrentCart.splice(index, 1);
+                console.log("supprimé")
+                console.log(CurrentCart)
+                
+                localStorage.setItem('cart', JSON.stringify(CurrentCart));
+                
+            }
+            location.reload();
+        })
 
-        totalqte.innerHTML = sumQte;
-        totalprice.innerHTML = sumPrice;
 
-        }
-    );
+    });
 }
 
-displayProduct();
+// Affichage du total
+
+async function total() {
+
+    let data = await getItems();
+    
+    let totalqte = document.getElementById("totalQuantity");
+    let totalprice = document.getElementById("totalPrice");
+
+    let sumQte = 0;
+    let sumPrice = 0;
+
+    for (let i = 0; i < CurrentCart.length; i++) {
+        sumQte += parseInt(CurrentCart[i].qte);
+    }
+
+    for (let i = 0; i < CurrentCart.length; i++) {
+
+        data.forEach( item => {
+
+            if(CurrentCart[i].id === item._id) {
+            sumPrice += parseInt(item.price * CurrentCart[i].qte);
+            }
+        })
+    }
+
+    totalqte.innerHTML = sumQte;
+    totalprice.innerHTML = sumPrice;
+}
+
+// Appel des fonctions
+
+renderCart();
+total();
