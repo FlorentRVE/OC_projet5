@@ -120,4 +120,3 @@ function addToCart() {
 }
 
 addToCart();
-// localStorage.clear()

@@ -201,6 +201,92 @@ async function total() {
     totalprice.innerHTML = sumPrice;
 }
 
+// =============== Gestion du formulaire et passage commande ==================
+
+// Création d'un objet Contact
+
+let contact = {
+    firstName: "",
+    lastName: "",
+    address: "",
+    city: "",
+    email: ""
+}
+
+// Utilisation des regex pour vérifier la validité des champs
+
+// Récupération des inputs du formulaire via les IDs
+let firstName = document.getElementById("firstName");
+let lastName = document.getElementById("lastName");
+let adress = document.getElementById("address");
+let city = document.getElementById("city");
+let mail = document.getElementById("email");
+
+// Création d'un array regroupant les différents input avec lesquels on va intéragir
+let form = [firstName, lastName, adress, city, mail];
+
+// Booléen "Faux" par défaut qui deviendront "Vrai" si les formats adresse/email sont valable
+let validAdress = false;
+let validMail = false;
+
+form.forEach(element => {                   // On parcours l'array regroupant les inputs
+
+    element.addEventListener("input", (e) => {      // Et pour chaque input ...
+
+        let chaine = e.target.value;                // On récupére la valeur du champs
+
+        if(e.target.id === "email") {               // Si l'ID du champs est email
+
+            let reg = /\b[\w\.-]+@[\w\.-]+\.\w{2,4}\b/gi;   // Regex utilisé pour vérifier les format email
+        
+            console.log(chaine.match(reg));
+
+            if(chaine.match(reg) === null) { 
+
+                console.log("error typo");
+                validMail = false;
+
+            } else {
+
+                console.log("we cool")
+                validMail = true;
+            }
+        }
+
+        if(e.target.id === "address") {     // Même procédé pour le champs Adresse
+
+            
+            let reg = /\b(\d{1,}) [a-zA-Z0-9\s]+ ? [a-zA-Z]+ ? [0-9]{5,6}\b/gi;
+        
+            console.log(chaine.match(reg));
+
+            if(chaine.match(reg) === null) {
+
+                console.log("error typo");
+                validAdress = false;
+
+            } else {
+
+                console.log("we cool");
+                validAdress = true;
+            }
+        }
+
+        if(validAdress === true && validMail == true) {
+
+            console.log("all good");
+
+        }
+    
+
+    
+    })
+})
+
+// Utiliser Fetch avec POST en ajoutant le body
+
+// ler serveur fourni le num de commande en réponse au POST de la commande
+
 // Appel des fonctions
 
 renderCart();
