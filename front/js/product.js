@@ -39,15 +39,16 @@ async function displayProduct() {
         // Rattache de l'img au contenant
         let img_container = document.querySelector(".item__img");
         img_container.appendChild(image);
-     
-        for(let i = 0; i< element.colors.length; i++) {  //Boucle permettant d'afficher les choix de couleurs
 
-        // Création de balise <option>
+        //Boucle permettant d'afficher les choix de couleurs
+        for(let i = 0; i< element.colors.length; i++) {  
+
+            // Création de balise <option>
         let option = document.createElement("option");
         option.value = element.colors[i];
         option.innerHTML = element.colors[i];
 
-        // Rattache des <option> à la balise <select> avec l'id "colors"
+            // Rattache des <option> à la balise <select> avec l'id "colors"
         let colors = document.getElementById("colors")
         colors.appendChild(option)
         }

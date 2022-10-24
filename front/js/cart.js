@@ -5,8 +5,11 @@ function getItems() {
 }
 
 // Récupération du panier de LocalStorage
+
 let localCart = localStorage.getItem("cart");
+
 // Création d'un panier Page à partir du panier LocaleStorage
+
 let CurrentCart = localCart ? JSON.parse(localCart) : []
 
 async function renderCart() {
@@ -159,12 +162,12 @@ async function renderCart() {
                 
                 CurrentCart.splice(index, 1);
                 console.log("supprimé")
-                console.log(CurrentCart)
                 
                 localStorage.setItem('cart', JSON.stringify(CurrentCart));
                 
             }
             location.reload();
+            console.log(CurrentCart)
         })
 
 
@@ -213,25 +216,51 @@ let contact = {
     email: ""
 }
 
-// Utilisation des regex pour vérifier la validité des champs
+// Création du tableau regroupant les ID produit
+
+let tabID = [];
+
+// Création de l'objet final qui contiendra l'objet contact et le tableau des ID produits à envoyer via la requête POST
+
+let orderValid = {};
+
+// =================================================
 
 // Récupération des inputs du formulaire via les IDs
+
 let firstName = document.getElementById("firstName");
 let lastName = document.getElementById("lastName");
-let adress = document.getElementById("address");
+let address = document.getElementById("address");
 let city = document.getElementById("city");
 let mail = document.getElementById("email");
 
-// Création d'un array regroupant les différents input avec lesquels on va intéragir
-let form = [firstName, lastName, adress, city, mail];
+// Récupération des <p> pour afficher les erreurs via les IDs
 
-// Booléen "Faux" par défaut qui deviendront "Vrai" si les formats adresse/email sont valable
-let validAdress = false;
+let firstNameError = document.getElementById("firstNameErrorMsg");
+let lastNameError = document.getElementById("lastNameErrorMsg");
+let adressError = document.getElementById("addressErrorMsg");
+let cityError = document.getElementById("cityErrorMsg");
+let mailError = document.getElementById("emailErrorMsg");
+
+// Création d'un array regroupant les différents input avec lesquels on va intéragir
+
+let form = [firstName, lastName, address, city, mail];
+
+// Booléens "Faux" par défaut qui deviendront "Vrai" si les formats des différents inputs sont valable
+
+let validAddress = false;
+let validLastName = false;
+let validFirstName = false;
 let validMail = false;
+let validCity = false;
+
+// Booléen qui deviendra Vrai si TOUS les champs input sont de format correct
+
+let inputValid = false; 
 
 form.forEach(element => {                   // On parcours l'array regroupant les inputs
 
-    element.addEventListener("input", (e) => {      // Et pour chaque input ...
+    element.addEventListener("change", (e) => {      // Et pour chaque input ...
 
         let chaine = e.target.value;                // On récupére la valeur du champs
 
@@ -244,48 +273,166 @@ form.forEach(element => {                   // On parcours l'array regroupant le
             if(chaine.match(reg) === null) { 
 
                 console.log("error typo");
+                mailError.innerHTML = "Format incorrect"
                 validMail = false;
-
+                
             } else {
-
-                console.log("we cool")
+                
+                console.log("Format valide")
                 validMail = true;
+                mailError.innerHTML = "";
             }
         }
-
+        
         if(e.target.id === "address") {     // Même procédé pour le champs Adresse
-
+            
             
             let reg = /\b(\d{1,}) [a-zA-Z0-9\s]+ ? [a-zA-Z]+ ? [0-9]{5,6}\b/gi;
-        
+            
             console.log(chaine.match(reg));
-
+            
             if(chaine.match(reg) === null) {
-
+                
                 console.log("error typo");
-                validAdress = false;
-
+                adressError.innerHTML = "Format incorrect"
+                validAddress = false;
+                
             } else {
-
-                console.log("we cool");
-                validAdress = true;
+                
+                console.log("Format valide");
+                validAddress = true;
+                adressError.innerHTML = "";
             }
         }
 
-        if(validAdress === true && validMail == true) {
-
-            console.log("all good");
-
+        if(e.target.id === "firstName") {     // Idem pour les autres champs
+            
+            
+            let reg = /^([ \u00c0-\u01ffa-zA-Z'\-])+$/gi;
+            
+            console.log(chaine.match(reg));
+            
+            if(chaine.match(reg) === null) {
+                
+                console.log("error typo");
+                firstNameError.innerHTML = "Format incorrect"
+                validFirstName = false;
+                
+            } else {
+                
+                console.log("Format valide");
+                validFirstName = true;
+                firstNameError.innerHTML = "";
+            }
         }
-    
 
-    
+        if(e.target.id === "lastName") { 
+            
+            
+            let reg = /^([ \u00c0-\u01ffa-zA-Z'\-])+$/gi;
+            
+            console.log(chaine.match(reg));
+            
+            if(chaine.match(reg) === null) {
+                
+                console.log("error typo");
+                lastNameError.innerHTML = "Format incorrect"
+                validLastName = false;
+                
+            } else {
+                
+                console.log("Format valide");
+                validLastName = true;
+                lastNameError.innerHTML = "";
+            }
+        }
+
+        if(e.target.id === "city") { 
+            
+            
+            let reg = /^([ \u00c0-\u01ffa-zA-Z'\-])+$/gi;
+            
+            console.log(chaine.match(reg));
+            
+            if(chaine.match(reg) === null) {
+                
+                console.log("error typo");
+                cityError.innerHTML = "Format incorrect"
+                validCity = false;
+                
+            } else {
+                
+                console.log("Format valide");
+                validCity = true;
+                cityError.innerHTML = "";
+            }
+        }
+
+        // Enfin on autorise la validation si tous les champs sont validés
+
+        if(validAddress === true && validMail == true && validCity == true 
+            && validFirstName == true && validLastName == true) {
+
+            inputValid = true;
+            
+            // Complétion des infos contact
+            
+            contact.firstName = firstName.value;
+            contact.lastName = lastName.value;
+            contact.address = address.value;
+            contact.city = city.value;
+            contact.email = mail.value;
+            
+            // Complétion du tableau ID
+            
+            CurrentCart.forEach(element => tabID.push(element.id))
+            
+            // Complétion de l'objet à envoyer
+            
+            orderValid = {
+                contact,
+                tabID
+            }
+            
+            console.log("Prêt pour l'envoi !");
+            console.log(orderValid);
+        }
     })
 })
 
 // Utiliser Fetch avec POST en ajoutant le body
 
+let orderBtn = document.getElementById("order");
+
+orderBtn.addEventListener("click", function(e) {
+    
+    if(inputValid === true) {
+
+        e.preventDefault() // Empecher l'activation du "submit" sous Firefox
+
+        // Définition du corps de la requête POST
+
+        let option = {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(orderValid),
+        }
+
+        // Requête POST à l'API
+
+        fetch("http://localhost:3000/api/products/order", option)
+        .then(response => response.json())
+        .then(data => console.log(data))
+        .catch(err => console.log(err))
+        // window.location.href = "confirmation.html"
+
+    }
+    
+})
+
 // ler serveur fourni le num de commande en réponse au POST de la commande
+
+// ============================================================
 
 // Appel des fonctions
 
