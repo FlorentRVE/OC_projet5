@@ -218,7 +218,7 @@ let contact = {
 
 // Création du tableau regroupant les ID produit
 
-let tabID = [];
+let products = [];
 
 // Création de l'objet final qui contiendra l'objet contact et le tableau des ID produits à envoyer via la requête POST
 
@@ -385,13 +385,13 @@ form.forEach(element => {                   // On parcours l'array regroupant le
             
             // Complétion du tableau ID
             
-            CurrentCart.forEach(element => tabID.push(element.id))
+            CurrentCart.forEach(element => products.push(element.id))
             
             // Complétion de l'objet à envoyer
             
             orderValid = {
                 contact,
-                tabID
+                products
             }
             
             console.log("Prêt pour l'envoi !");
@@ -408,13 +408,13 @@ orderBtn.addEventListener("click", function(e) {
     
     if(inputValid === true) {
 
-        e.preventDefault() // Empecher l'activation du "submit" sous Firefox
+        e.preventDefault() // Empecher l'activation du "submit" du boutton qui produit une erreur
 
         // Définition du corps de la requête POST
 
         let option = {
             method: 'POST',
-            headers: {'Content-Type': 'application/json'},
+            headers: {'Content-Type': 'application/json; charset=utf-8' },
             body: JSON.stringify(orderValid),
         }
 
@@ -422,15 +422,16 @@ orderBtn.addEventListener("click", function(e) {
 
         fetch("http://localhost:3000/api/products/order", option)
         .then(response => response.json())
-        .then(data => console.log(data))
+        .then((data) => {
+            console.log(data)
+            console.log(data.orderId)
+            window.location.href = "confirmation.html?orderID=" + data.orderId;
+        })
         .catch(err => console.log(err))
-        // window.location.href = "confirmation.html"
 
     }
     
 })
-
-// ler serveur fourni le num de commande en réponse au POST de la commande
 
 // ============================================================
 
