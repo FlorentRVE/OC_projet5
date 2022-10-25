@@ -104,7 +104,9 @@ function addToCart() {
             }
         }
                
-        if(newArticle && product.color != ""){ // Sinon si c'est un nouveau produit on l'ajoute au panier, sauf si la valeur de la couleur est vide
+        if(newArticle && product.color != "" && product.qte != 0){ // Sinon si c'est un nouveau produit on 
+                                                                    // l'ajoute au panier, sauf si la valeur de la couleur est vide
+                                                                    // et que la quantité est nulle
             
             CurrentCart.push(product);
             console.log("Product ajouté au panier")

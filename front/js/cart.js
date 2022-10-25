@@ -12,6 +12,8 @@ let localCart = localStorage.getItem("cart");
 
 let CurrentCart = localCart ? JSON.parse(localCart) : []
 
+// Affichage du panier
+
 async function renderCart() {
     let data = await getItems();
 
@@ -146,7 +148,7 @@ async function renderCart() {
             console.log(CurrentCart)
 
             localStorage.setItem('cart', JSON.stringify(CurrentCart));
-            total();
+            total(); // recalcul du total
         })
 
         // Fonctionnalité suppression
@@ -224,7 +226,7 @@ let products = [];
 
 let orderValid = {};
 
-// =================================================
+// =====================================
 
 // Récupération des inputs du formulaire via les IDs
 
@@ -387,7 +389,7 @@ form.forEach(element => {                   // On parcours l'array regroupant le
             
             CurrentCart.forEach(element => products.push(element.id))
             
-            // Complétion de l'objet à envoyer
+            // Complétion de l'objet à envoyer via la requête POST
             
             orderValid = {
                 contact,
@@ -400,36 +402,44 @@ form.forEach(element => {                   // On parcours l'array regroupant le
     })
 })
 
-// Utiliser Fetch avec POST en ajoutant le body
+// Utiliser Fetch avec POST au click sur le boutton "Commander"
 
 let orderBtn = document.getElementById("order");
 
 orderBtn.addEventListener("click", function(e) {
+
+    if(CurrentCart.length != 0) { // Si le panier n'est pas vide ...
+
+        if(inputValid === true) { // ... et si tous les champs sont rempli correctement
+
+            e.preventDefault() // Empeche l'activation du "submit" du boutton qui produit une erreur
     
-    if(inputValid === true) {
-
-        e.preventDefault() // Empecher l'activation du "submit" du boutton qui produit une erreur
-
-        // Définition du corps de la requête POST
-
-        let option = {
-            method: 'POST',
-            headers: {'Content-Type': 'application/json; charset=utf-8' },
-            body: JSON.stringify(orderValid),
+            // Définition du corps de la requête POST
+    
+            let option = {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json; charset=utf-8' },
+                body: JSON.stringify(orderValid),
+            }
+    
+            // Requête POST à l'API
+    
+            fetch("http://localhost:3000/api/products/order", option)
+            .then(response => response.json())
+            .then((data) => {
+                console.log(data)
+                console.log(data.orderId)
+                window.location.href = "confirmation.html?orderID=" + data.orderId; // Redirection intégrant l'ID de la commande
+                localStorage.clear();
+            })
+            .catch(err => console.log(err))
+    
         }
-
-        // Requête POST à l'API
-
-        fetch("http://localhost:3000/api/products/order", option)
-        .then(response => response.json())
-        .then((data) => {
-            console.log(data)
-            console.log(data.orderId)
-            window.location.href = "confirmation.html?orderID=" + data.orderId;
-        })
-        .catch(err => console.log(err))
-
+    } else {
+        alert("Panier vide !")
     }
+    
+
     
 })
 
